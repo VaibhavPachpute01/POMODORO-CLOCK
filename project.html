@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pomodoro Clock</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@500&display=swap">
+<link rel="stylesheet" href="animation.css"> 
+</head>
+<style>
+ * {
+    margin: 0;
+    padding: 0;
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    background-color: rgb(210, 210, 210);
+}
+
+.container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    height: 90vh;
+    text-align: center;
+}
+
+h1 {
+    font-size: 40px;
+    margin-bottom: 20px;
+    position: relative;
+    z-index: 2;
+}
+
+.main {
+    border: 2px solid;
+    border-radius: 10px;
+    padding: 50px;
+    margin-top: 50px;
+    background-color: rgb(230, 230, 230);
+}
+
+.timer-area {
+    font-size: 70px;
+    margin-top: 10px;
+    position: relative;
+    z-index: 1;
+}
+
+.timer-area input {
+    font-size: inherit;
+    border: none;
+    outline: none;
+    text-align: center;
+    width: 200px;
+    background-color: transparent;
+}
+
+.timer-title {
+    font-size: 20px;
+    margin-bottom: 20px;
+}
+
+.buttons {
+    margin-top: 20px;
+}
+
+.buttons button {
+    font-size: 15px;
+    padding: 10px;
+    border-radius: 10px;
+    width: 150px;
+    margin: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.buttons button:hover {
+    background-color: rgb(150, 150, 150);
+}
+
+.buttons button.active {
+    color: rgb(240, 240, 240);
+    background-color: rgb(120, 120, 120);
+    border: none;
+}
+
+.buttons button.active:hover {
+  background-color: rgb(199, 196, 196);
+  color:  black;
+  border: 2px solid;
+}
+
+</style>
+<body>
+  <div><div><div></div></div></div>
+<div class="container">
+  <h1>Pomodoro Clock</h1>
+    <div class="main">
+        <div class="buttons">
+            <button onclick="setShortBreak()">Short Break</button>
+            <button onclick="setLongBreak()">Long Break</button>
+        </div>
+        <div class="timer-area" id="timer" onclick="editTimer()">25:00</div>
+        <div class="timer-title">Timer</div>
+        <div class="buttons">
+            <button onclick="startTimer()" class="active">Start</button>
+            <button onclick="pauseTimer()">Pause</button>
+            <button onclick="resetTimer()">Reset</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let minutes = 25;
+    let seconds = 0;
+    let isPaused = true;
+    let timer;
+
+    function startTimer() {
+        if (isPaused) {
+            isPaused = false;
+            timer = setInterval(updateTimer, 1000);
+        }
+    }
+
+    function pauseTimer() {
+        isPaused = true;
+        clearInterval(timer);
+    }
+
+    function resetTimer() {
+        isPaused = true;
+        clearInterval(timer);
+        minutes = 25;
+        seconds = 0;
+        updateDisplay();
+    }
+
+    function setShortBreak() {
+        minutes = 5;
+        seconds = 0;
+        updateDisplay();
+    }
+
+    function setLongBreak() {
+        minutes = 15;
+        seconds = 0;
+        updateDisplay();
+    }
+
+    function updateTimer() {
+        if (seconds === 0) {
+            if (minutes === 0) {
+                clearInterval(timer);
+                alert("Time's up!");
+                return;
+            } else {
+                minutes--;
+                seconds = 59;
+            }
+        } else {
+            seconds--;
+        }
+        updateDisplay();
+    }
+
+    function updateDisplay() {
+        let displayMinutes = minutes < 10 ? "0" + minutes : minutes;
+        let displaySeconds = seconds < 10 ? "0" + seconds : seconds;
+        document.getElementById("timer").textContent = ${displayMinutes}:${displaySeconds};
+    }
+
+    function editTimer() {
+        let timerDiv = document.getElementById("timer");
+        let timerText = timerDiv.textContent;
+        let input = document.createElement("input");
+        input.type = "text";
+        input.value = timerText;
+        input.onblur = function() {
+            let newTime = this.value;
+            let timeArray = newTime.split(":");
+            let newMinutes = parseInt(timeArray[0]);
+            let newSeconds = parseInt(timeArray[1]);
+            if (!isNaN(newMinutes) && !isNaN(newSeconds)) {
+                minutes = newMinutes;
+                seconds = newSeconds;
+                updateDisplay();
+            } else {
+                alert("Invalid input. Please enter time in MM:SS format.");
+            }
+            timerDiv.removeChild(input);
+            timerDiv.textContent = ${newMinutes}:${newSeconds};
+        };
+        timerDiv.textContent = "";
+        timerDiv.appendChild(input);
+        input.focus();
+    }
+</script>
+</body>
+</html>
